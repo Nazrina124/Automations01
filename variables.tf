@@ -9,7 +9,7 @@ variable "tools" {
        ports = {}
      }
     vault= {
-      instan ce_type ="t2.micro"
+      instance_type ="t2.micro"
       policy_name =[]
       Ports = {
       vault = 8200
