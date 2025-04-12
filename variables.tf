@@ -11,14 +11,15 @@ variable "tools" {
     
     vault= {
       instance_type ="t2.micro"
-      policy_name =[]
-      Ports = {
-       vault = 8200
+      policy_name = []
+      ports = {
+        vault = 8200
      }
-   }
     }
+  }
  }
 
  variable "hosted_zone_id" {
     default = "Z03035903COPLEGQ5980F"
 }
+
