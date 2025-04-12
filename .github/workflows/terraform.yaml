@@ -1,0 +1,11 @@
+name: provision tool
+on: [workflow_dispatch]
+jobs:
+  provision:
+    runs-on: self-hosted
+    steps:
+       - uses: actions/checkout@v4
+       - name: terraform init
+         run: terraform init
+       - name: terraform apply
+         run: terraform apply -auto-approve
