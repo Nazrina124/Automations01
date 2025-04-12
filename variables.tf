@@ -6,16 +6,16 @@ variable "tools" {
         policy_name = [
          "AdministratorAccess"
        ]
-       ports ={}
+       ports = {}
      }
-        vault= {
-        instance_type ="t2.micro"
-        policy_name =[]
-     }
-     Ports = {
-      "vault" = 8200
+    vault= {
+      instan ce_type ="t2.micro"
+      policy_name =[]
+      Ports = {
+      vault = 8200
      }
    }
+    }
  }
 
  variable "hosted_zone_id" {
