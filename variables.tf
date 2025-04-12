@@ -8,6 +8,7 @@ variable "tools" {
        ]
        ports = {}
      }
+    
     vault= {
       instance_type ="t2.micro"
       policy_name =[]
