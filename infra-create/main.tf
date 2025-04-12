@@ -52,8 +52,6 @@ ingress {
       description = ingress.key
     }
   }
-}
-
 
 
   tags = {
