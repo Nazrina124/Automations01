@@ -1,10 +1,14 @@
-name: Github actions
+name: terraform destroy
 on: [workflow_dispatch]
 jobs:
   Provision:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
-      - name: Run Vault Setup
-        #        run: ansible-playbook -i vault-internal.naifah.online, tool-setup.yml -e ansible_user=${{ secrets.SSH_USER }} -e ansible_password=${{ secrets.SSH_PASS }} -e tool_name=vault
-        run: ansible-playbook -i github-runner-internal.naifah.online, tool-setup.yml -e ansible_user=ec2-user -e ansible_password=Devops321 -e tool_name=github-runner
+        steps:
+        - uses: actions/checkout@v4
+        - name: terraform destroy
+          run: terraform destroy -auto-approve
+      # - uses: actions/checkout@v4
+      # - name: Run Vault Setup
+      #   #        run: ansible-playbook -i vault-internal.naifah.online, tool-setup.yml -e ansible_user=${{ secrets.SSH_USER }} -e ansible_password=${{ secrets.SSH_PASS }} -e tool_name=vault
+      #   run: ansible-playbook -i github-runner-internal.naifah.online, tool-setup.yml -e ansible_user=ec2-user -e ansible_password=Devops321 -e tool_name=github-runner
