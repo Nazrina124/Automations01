@@ -13,7 +13,7 @@ variable "tools" {
         policy_name =[]
      }
      Ports = {
-      vault = 8200
+      "vault" = 8200
      }
    }
  }
