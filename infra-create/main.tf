@@ -41,7 +41,7 @@ ingress {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
- vault =8200
+
  dynamic "ingress" {
     for_each = var.ports
     content {
