@@ -1,14 +1,19 @@
 variable "tools" {
-    default ={
+    default = {
+
       github-runner= {
         instance_type ="t2.micro"
         policy_name = [
          "AdministratorAccess"
        ]
+       ports ={}
      }
         vault= {
         instance_type ="t2.micro"
         policy_name =[]
+     }
+     Ports = {
+      vault = 8200
      }
    }
  }
