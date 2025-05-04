@@ -6,38 +6,37 @@
 - name: Setup Prompt
   ansible.builtin.shell: set-prompt github-runner
 
-# Extend LVM and Filesystem
-- name: Check if LVM volume group exists
-  ansible.builtin.shell: vgdisplay | grep -q "vg_runner"
-  register: vg_exists
-  failed_when: false
+- name: Expand root EBS volume to use new size
+  hosts: all
+  become: yes
+  tasks:
+
+- name: Install growpart and filesystem tools
+  ansible.builtin.package:
+    name:
+      - cloud-utils-growpart
+      - e2fsprogs
+      - xfsprogs
+  state: present
+
+- name: Grow the root partition
+  ansible.builtin.command: growpart /dev/xvda 1
+  register: growpart_result
+  changed_when: "'CHANGED' in growpart_result.stdout or growpart_result.rc == 0"
+  failed_when: growpart_result.rc != 0 and 'NOCHANGE' not in growpart_result.stdout
+
+- name: Detect root filesystem type
+  ansible.builtin.command: findmnt -n -o FSTYPE /
+  register: fstype_result
   changed_when: false
 
-# Grow the partition to use new EBS size
-- name: Extend EBS volume partition
-  ansible.builtin.shell: |
-      parted -s /dev/xvda resizepart 1 100%
-      pvresize /dev/xvda1
-      when: vg_exists.rc == 0
-      register: pv_resize
-      changed_when: pv_resize.rc == 0
+- name: Resize ext4 filesystem
+  ansible.builtin.command: resize2fs /dev/xvda1
+  when: fstype_result.stdout == "ext4"
 
-- name: Extend LVM volume group
-  ansible.builtin.shell: vgextend vg_runner /dev/xvda1
-      when: vg_exists.rc == 0 and pv_resize.changed
-      register: vg_extend
-      changed_when: vg_extend.rc == 0
-
-- name: Extend logical volume
-  ansible.builtin.shell: lvextend -l +100%FREE /dev/vg_runner/lv_root
-      when: vg_exists.rc == 0 and pv_resize.changed
-      register: lv_extend
-      changed_when: lv_extend.rc == 0
-- name: Resize filesystem
-  ansible.builtin.shell: xfs_growfs /
-      when: vg_exists.rc == 0 and lv_extend.changed
-      register: fs_resize
-      changed_when: fs_resize.rc == 0
+- name: Resize xfs filesystem
+  ansible.builtin.command: xfs_growfs -d /
+  when: fstype_result.stdout == "xfs"
 
 
 - name: Add Github Runner User
