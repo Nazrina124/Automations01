@@ -6,10 +6,39 @@
 - name: Setup Prompt
   ansible.builtin.shell: set-prompt github-runner
 
-# - name: Setup LVM Disk size
-#   ansible.builtin.include_role:
-#     name: common
-#     tasks_from: lvm
+# Extend LVM and Filesystem
+- name: Check if LVM volume group exists
+  ansible.builtin.shell: vgdisplay | grep -q "vg_runner"
+  register: vg_exists
+  failed_when: false
+  changed_when: false
+
+# Grow the partition to use new EBS size
+- name: Extend EBS volume partition
+  ansible.builtin.shell: |
+      parted -s /dev/xvda resizepart 1 100%
+      pvresize /dev/xvda1
+      when: vg_exists.rc == 0
+      register: pv_resize
+      changed_when: pv_resize.rc == 0
+
+- name: Extend LVM volume group
+  ansible.builtin.shell: vgextend vg_runner /dev/xvda1
+      when: vg_exists.rc == 0 and pv_resize.changed
+      register: vg_extend
+      changed_when: vg_extend.rc == 0
+
+- name: Extend logical volume
+  ansible.builtin.shell: lvextend -l +100%FREE /dev/vg_runner/lv_root
+      when: vg_exists.rc == 0 and pv_resize.changed
+      register: lv_extend
+      changed_when: lv_extend.rc == 0
+- name: Resize filesystem
+  ansible.builtin.shell: xfs_growfs /
+      when: vg_exists.rc == 0 and lv_extend.changed
+      register: fs_resize
+      changed_when: fs_resize.rc == 0
+
 
 - name: Add Github Runner User
   ansible.builtin.user:

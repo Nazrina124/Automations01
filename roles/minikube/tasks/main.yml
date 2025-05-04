@@ -2,7 +2,7 @@
   ansible.builtin.shell: set-prompt minikube
 
 - name: Extend Disk Volume
-  ansible.builtin.shell: growpart /dev/nvme0n1 4 ; lvextend -r -L +10G /dev/mapper/RootVG-varVol    ###wherevere free give the space other option to increase Rhel9 -l +100%FREE
+  ansible.builtin.shell: growpart /dev/nvme0n1 4 ; lvextend -r -L +10G /dev/mapper/RootVG-varVol  ###wherevere free give the space other option to increase Rhel9 -l +100%FREE
   ignore_errors: true
 
 - name: Install minikube
