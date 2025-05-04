@@ -31,7 +31,7 @@ instance_market_options {
 
 
 resource "aws_security_group" "tool_sg" {
-  name        = "${var.name}-sg-${random_id.sg_suffix.hex}"
+  name        = "${var.name}-sg"
   description = "${var.name}-sg"
 
 egress {
