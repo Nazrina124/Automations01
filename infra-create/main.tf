@@ -13,18 +13,19 @@ instance_market_options {
     }
   }
 
-  root_block_device = var.volume_size
+ }
+
+  root_block_device {
+    volume_size = var.volume_size
+  }
+
 
   tags = {
     Name = var.name
 
   }
-}
 
 
-resource "random_id" "sg_suffix" {
-  byte_length = 8
-}
 
 resource "aws_security_group" "tool_sg" {
   name        = "${var.name}-sg-${random_id.sg_suffix.hex}"
@@ -53,8 +54,7 @@ ingress {
       cidr_blocks      = ["0.0.0.0/0"]
       description = ingress.key
     }
-  }
-
+ }
 
   tags = {
     Name = "${var.name}-sg"
