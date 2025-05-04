@@ -13,6 +13,8 @@ instance_market_options {
     }
   }
 
+  root_block_device = var.volume_size
+
   tags = {
     Name = var.name
 
