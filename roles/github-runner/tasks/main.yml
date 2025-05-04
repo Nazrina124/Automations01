@@ -6,38 +6,9 @@
 - name: Setup Prompt
   ansible.builtin.shell: set-prompt github-runner
 
-- name: Expand root EBS volume to use new size
-  hosts: all
-  become: yes
-  tasks:
-
-- name: Install growpart and filesystem tools
-  ansible.builtin.package:
-    name:
-      - cloud-utils-growpart
-      - e2fsprogs
-      - xfsprogs
-  state: present
-
-- name: Grow the root partition
-  ansible.builtin.command: growpart /dev/xvda 1
-  register: growpart_result
-  changed_when: "'CHANGED' in growpart_result.stdout or growpart_result.rc == 0"
-  failed_when: growpart_result.rc != 0 and 'NOCHANGE' not in growpart_result.stdout
-
-- name: Detect root filesystem type
-  ansible.builtin.command: findmnt -n -o FSTYPE /
-  register: fstype_result
-  changed_when: false
-
-- name: Resize ext4 filesystem
-  ansible.builtin.command: resize2fs /dev/xvda1
-  when: fstype_result.stdout == "ext4"
-
-- name: Resize xfs filesystem
-  ansible.builtin.command: xfs_growfs -d /
-  when: fstype_result.stdout == "xfs"
-
+- name: Extend Disk Volume
+  ansible.builtin.shell: growpart /dev/nvme0n1 4 ; lvextend -r -L +10G /dev/mapper/RootVG-varVol  ###wherevere free give the space other option to increase Rhel9 -l +100%FREE
+  ignore_errors: true
 
 - name: Add Github Runner User
   ansible.builtin.user:
